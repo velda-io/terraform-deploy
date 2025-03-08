@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: velda-node-setup
+  namespace: kube-system
+  labels:
+    app: velda-node-setup
+spec:
+  selector:
+    matchLabels:
+      app: velda-node-setup
+  template:
+    metadata:
+      labels:
+        app: velda-node-setup
+    spec:
+      tolerations:
+        - key: "velda-agent"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: velda-node-setup
+          image: us-west1-docker.pkg.dev/skyworkstation/vworkstation/apparmor@sha256:0c5a9587473e91fcca56f81119fe14a7d90b7998bb43f34c2525582741e1c242
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - name: security-kernel
+            mountPath: /sys/kernel/security
+          - name: apparmor-profile
+            mountPath: /etc/apparmor.d/velda
+            readOnly: true
+      volumes:
+        - name: security-kernel
+          hostPath:
+            path: /sys/kernel/security
+            type: Directory
+        - name: apparmor-profile
+          configMap:
+            name: velda-apparmor-profile

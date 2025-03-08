@@ -1,0 +1,97 @@
+include <tunables/global>
+
+profile velda-daemon {
+	network,
+	file,
+	capability,
+	signal,
+	signal (receive) peer=unconfined,
+
+	/velda rklcx -> velda-sandbox,
+	profile velda-sandbox flags=(mediate_deleted, attach_disconnected) {
+		/** rwklmpx -> velda-default,
+
+		capability,
+		mount,
+		umount,
+		signal,
+		network,
+		pivot_root,
+
+		signal (receive) peer=unconfined,
+		signal (receive) peer=velda-daemon,
+
+		deny @{PROC}/* w,	 # deny write for all files directly in /proc (not in a subdir)
+		# deny write to files not in /proc/<number>/** or /proc/sys/**
+		deny @{PROC}/{[^1-9],[^1-9][^0-9],[^1-9s][^0-9y][^0-9s],[^1-9][^0-9][^0-9][^0-9/]*}/** w,
+		deny @{PROC}/sys/[^k]** w,	# deny /proc/sys except /proc/sys/k* (effectively /proc/sys/kernel)
+		deny @{PROC}/sys/kernel/{?,??,[^s][^h][^m]**} w,	# deny everything except shm* in /proc/sys/kernel/
+		deny @{PROC}/sysrq-trigger rwklx,
+		deny @{PROC}/kcore rwklx,
+
+		deny /sys/[^f]*/** wklx,
+		deny /sys/f[^s]*/** wklx,
+		deny /sys/fs/[^c]*/** wklx,
+		deny /sys/fs/c[^g]*/** wklx,
+		deny /sys/fs/cg[^r]*/** wklx,
+		deny /sys/firmware/** rwklx,
+		deny /sys/devices/virtual/powercap/** rwklx,
+		deny /sys/kernel/security/** rwklx,
+	}
+}
+
+profile velda-default flags=(attach_disconnected,mediate_deleted) {
+
+	capability,
+	deny capability mknod,
+	deny capability sys_time,
+	deny capability sys_module,
+	network,
+	file,
+
+	umount,
+
+	# Allow mount?
+	mount,
+
+	deny mount fstype=devtmpfs,
+	deny mount fstype=sysfs,
+
+	# Allow ptrace
+	ptrace (trace,readby,read),
+
+	signal (receive) peer=unconfined,
+	signal (receive) peer=velda-daemon,
+	signal (receive) peer=velda-daemon//velda-sandbox,
+	signal (send, receive) peer=velda-default,
+	# Deny loading kernel modules
+	#deny /sbin/modprobe,
+
+	# Deny kernel keyring operations
+	#deny key { create read link search link_by_id },
+
+
+	deny @{PROC}/* w,	 # deny write for all files directly in /proc (not in a subdir)
+	# deny write to files not in /proc/<number>/** or /proc/sys/**
+	deny @{PROC}/{[^1-9],[^1-9][^0-9],[^1-9s][^0-9y][^0-9s],[^1-9][^0-9][^0-9][^0-9/]*}/** w,
+	deny @{PROC}/sys/[^k]** w,	# deny /proc/sys except /proc/sys/k* (effectively /proc/sys/kernel)
+	deny @{PROC}/sys/kernel/{?,??,[^s][^h][^m]**} w,	# deny everything except shm* in /proc/sys/kernel/
+	deny @{PROC}/sysrq-trigger rwklx,
+	deny @{PROC}/kcore rwklx,
+
+	deny /sys/[^f]*/** wklx,
+	deny /sys/f[^s]*/** wklx,
+	deny /sys/fs/[^c]*/** wklx,
+	deny /sys/fs/c[^g]*/** wklx,
+	deny /sys/fs/cg[^r]*/** wklx,
+	deny /sys/firmware/** rwklx,
+	deny /sys/devices/virtual/powercap/** rwklx,
+	deny /sys/kernel/security/** rwklx,
+
+	# Include the base abstractions
+	# These include common file and process access permissions
+	# Ensure these abstractions exist in your system
+	# Or modify with the specific needs of the use-case
+	include <abstractions/base>
+	include <abstractions/nameservice>
+}

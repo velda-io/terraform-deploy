@@ -1,0 +1,49 @@
+resource "tls_private_key" "auth_token_key" {
+  algorithm   = "ECDSA"
+  ecdsa_curve = "P256" # This corresponds to prime256v1 (secp256r1)
+}
+
+resource "aws_secretsmanager_secret" "auth_token_public_key" {
+  name = "${var.name}/auth-public-key"
+}
+
+resource "aws_secretsmanager_secret_version" "auth_token_public_value" {
+  secret_id     = aws_secretsmanager_secret.auth_token_public_key.id
+  secret_string = tls_private_key.auth_token_key.public_key_pem
+}
+
+resource "aws_secretsmanager_secret" "auth_token_private_key" {
+  name = "${var.name}/auth-private-key"
+}
+
+resource "aws_secretsmanager_secret_version" "auth_token_private_value" {
+  secret_id     = aws_secretsmanager_secret.auth_token_private_key.id
+  secret_string = tls_private_key.auth_token_key.private_key_pem
+}
+
+resource "tls_private_key" "jumphost_key" {
+  count     = local.allow_public_access ? 1 : 0
+  algorithm = "ED25519"
+}
+
+resource "aws_secretsmanager_secret" "jumphosts_public_key" {
+  count = local.allow_public_access ? 1 : 0
+  name  = "${var.name}/jumphost-public"
+}
+
+resource "aws_secretsmanager_secret_version" "jumphost_public_value" {
+  count         = local.allow_public_access ? 1 : 0
+  secret_id     = aws_secretsmanager_secret.jumphosts_public_key[0].id
+  secret_string = tls_private_key.jumphost_key[0].public_key_openssh
+}
+
+resource "aws_secretsmanager_secret" "jumphosts_private_key" {
+  count = local.allow_public_access ? 1 : 0
+  name  = "${var.name}/jumphost-private"
+}
+
+resource "aws_secretsmanager_secret_version" "jumphost_private_value" {
+  count         = local.allow_public_access ? 1 : 0
+  secret_id     = aws_secretsmanager_secret.jumphosts_private_key[0].id
+  secret_string = tls_private_key.jumphost_key[0].private_key_pem
+}
