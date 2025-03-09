@@ -76,3 +76,9 @@ variable "image_version" {
   description = "The version of the image"
   type        = map(string)
 }
+
+variable "access_granted" {
+  description = "Whether the access has been granted for the deployment"
+  type        = bool
+  default     = false
+}

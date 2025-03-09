@@ -21,7 +21,7 @@ resource "google_secret_manager_secret_iam_member" "cert_csr_access" {
   count     = var.https_certs != null ? 1 : 0
   secret_id = google_secret_manager_secret.certs_csr[0].id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.controller_sa.email}"
+  member    = "serviceAccount:${data.google_service_account.controller_sa.email}"
 }
 
 resource "google_secret_manager_secret" "certs_key" {
@@ -47,5 +47,5 @@ resource "google_secret_manager_secret_iam_member" "cert_key_access" {
   count     = var.https_certs != null ? 1 : 0
   secret_id = google_secret_manager_secret.certs_key[0].id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.controller_sa.email}"
+  member    = "serviceAccount:${data.google_service_account.controller_sa.email}"
 }

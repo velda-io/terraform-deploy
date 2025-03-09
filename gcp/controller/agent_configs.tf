@@ -8,5 +8,5 @@ resource "google_storage_bucket" "pool_configs" {
 resource "google_storage_bucket_iam_member" "controller_sa_reader" {
     bucket = google_storage_bucket.pool_configs.name
     role   = "roles/storage.objectViewer"
-    member = "serviceAccount:${google_service_account.controller_sa.email}"
+    member = "serviceAccount:${data.google_service_account.controller_sa.email}"
 }

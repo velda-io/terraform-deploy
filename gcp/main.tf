@@ -4,6 +4,9 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 6.15.0"
     }
+    terraform = {
+      source = "terraform.io/builtin/terraform"
+    }
   }
 }
 
@@ -12,7 +15,9 @@ provider "google" {
   region  = var.region
   zone    = var.zone
 }
-
+data "google_project" "project" {
+  project_id = var.project
+}
 data "google_compute_network" "network" {
   name = basename(var.network)
 }
@@ -22,8 +27,51 @@ data "google_compute_subnetwork" "subnetwork" {
   region = var.region
 }
 
+resource "google_service_account" "controller_sa" {
+  project      = var.project
+  account_id   = "${var.name}-controller"
+  display_name = "Controller Service Account"
+}
+
+resource "google_service_account" "agent_sa" {
+  project      = var.project
+  account_id   = "${var.name}-agent"
+  display_name = "agent Service Account"
+}
+
+locals {
+  permission_request = provider::terraform::encode_expr({
+    controller_sa = google_service_account.controller_sa.email
+    agent_sa      = google_service_account.agent_sa.email
+    project_id    = data.google_project.project.project_id
+  })
+}
+
+resource "null_resource" "update_sa_permissions" {
+  triggers = {
+    controller_sa = google_service_account.controller_sa.email
+    agent_sa      = google_service_account.agent_sa.email
+    project_id    = data.google_project.project.project_id
+    access_granted = var.access_granted
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      ${var.access_granted ? "exit 0" : ""}
+echo "Please provide the following info to Velda Inc:"
+echo "${local.permission_request}"
+echo "After granting the permissions, add "access_granted = true" to variables and run 'terraform apply' again."
+exit 1
+EOT
+  }
+}
+
 module "controller" {
-  source = "./controller"
+  depends_on = [null_resource.update_sa_permissions]
+  source     = "./controller"
+  providers = {
+    google = google
+  }
 
   project    = var.project
   region     = var.region

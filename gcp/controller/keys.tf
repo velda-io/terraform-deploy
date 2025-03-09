@@ -31,7 +31,7 @@ resource "google_secret_manager_secret_iam_member" "jumphost_public_access" {
   count     = local.allow_public_access ? 1 : 0
   secret_id = google_secret_manager_secret.jumphosts_public_key[0].id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.controller_sa.email}"
+  member    = "serviceAccount:${data.google_service_account.controller_sa.email}"
 }
 
 resource "google_secret_manager_secret" "jumphosts_private_key" {
@@ -57,7 +57,7 @@ resource "google_secret_manager_secret_iam_member" "jumphost_private_access" {
   count     = local.allow_public_access ? 1 : 0
   secret_id = google_secret_manager_secret.jumphosts_private_key[0].id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.controller_sa.email}"
+  member    = "serviceAccount:${data.google_service_account.controller_sa.email}"
 }
 
 resource "google_secret_manager_secret" "auth_public_key" {
@@ -78,6 +78,6 @@ resource "google_secret_manager_secret_version" "auth_public_key" {
 
 resource "google_project_iam_member" "agent_sa_secret_access" {
   project = var.project
-  member  = "serviceAccount:${google_service_account.agent_sa.email}"
+  member  = "serviceAccount:${data.google_service_account.agent_sa.email}"
   role    = "roles/secretmanager.secretAccessor"
 }
