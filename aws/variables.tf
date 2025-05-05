@@ -62,3 +62,13 @@ variable "default_amis" {
   description = "Default AMIs by machine types"
   type        = map(string)
 }
+
+variable "bin_authorized" {
+  description = "Authorized for binary access"
+  type        = bool
+  default     = false
+}
+variable "controller_subnet_id" {
+  description = "Controller subnet"
+  type        = string
+}

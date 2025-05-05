@@ -92,3 +92,14 @@ variable "gke_cluster" {
   })
   default = null
 }
+
+variable "bin_authorized" {
+  description = "Authorized for binary access"
+  type = bool
+  default = false
+}
+
+variable "controller_subnet_id" {
+  description = "Controller subnet"
+  type = string
+}

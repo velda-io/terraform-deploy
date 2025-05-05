@@ -1,5 +1,5 @@
 output "controller_ip" {
-  value = local.allow_public_access ? aws_eip.lb.public_ip : aws_instance.controller.public_ip
+  value = local.allow_public_access ? aws_eip.lb[0].public_ip : aws_instance.controller.public_ip
 }
 
 output "controller_ip_internal" {

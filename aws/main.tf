@@ -22,11 +22,12 @@ data "aws_subnet" "subnetwork" {
 module "controller" {
   source = "./controller"
 
-  region     = var.region
-  zone       = var.zone
-  vpc_id     = var.vpc_id
-  subnet_ids = var.subnet_ids
-  domain     = var.domain
+  region               = var.region
+  zone                 = var.zone
+  vpc_id               = var.vpc_id
+  subnet_ids           = var.subnet_ids
+  controller_subnet_id = var.controller_subnet_id
+  domain               = var.domain
 
   external_access = {}
 
@@ -45,6 +46,8 @@ module "controller" {
     cert = file(var.https_certs.cert)
     key  = file(var.https_certs.key)
   }
+
+  bin_authorized = var.bin_authorized
 }
 
 module "agent" {

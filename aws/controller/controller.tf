@@ -19,13 +19,25 @@ data "aws_ami" "ubuntu24" {
 }
 
 data "aws_subnet" "subnetwork" {
-  id = var.subnet_ids[0]
+  id = var.controller_subnet_id
+}
+
+resource "null_resource" "check_permissions" {
+  triggers = {
+    bin_authorized = var.bin_authorized
+  }
+  provisioner "local-exec" {
+    command = <<EOT
+${var.bin_authorized ? "exit 0" : "exit 1"}
+EOT
+  }
 }
 
 resource "aws_instance" "controller" {
+  depends_on = [null_resource.check_permissions]
   ami                         = data.aws_ami.ubuntu24.id
   instance_type               = var.controller_machine_type
-  subnet_id                   = var.subnet_ids[0]
+  subnet_id                   = var.controller_subnet_id
   associate_public_ip_address = local.allow_public_access
 
   root_block_device {
@@ -63,6 +75,7 @@ resource "aws_instance" "controller" {
 }
 
 resource "aws_eip" "lb" {
+  count = local.allow_public_access ? 1 : 0
   instance = aws_instance.controller.id
   domain   = "vpc"
 }
