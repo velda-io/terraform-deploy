@@ -63,6 +63,13 @@ variable "data_disk_size" {
   type        = number
   default     = 20
 }
+variable "controller_amis" {
+  description = "Controller AMIs by region"
+  type        = map(string)
+  default     = {
+    "us-east-1" = "ami-0dcf02acfb11df3d3"
+  }
+}
 
 variable "default_amis" {
   description = "Default AMIs by machine types"

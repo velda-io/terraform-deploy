@@ -113,3 +113,9 @@ variable "connection_source" {
     referenced_security_group_id = optional(string),
   }))
 }
+
+variable "controller_ami" {
+  description = "Controller AMI"
+  type        = string
+  default     = null
+}

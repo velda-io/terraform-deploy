@@ -21,6 +21,7 @@ data "aws_subnet" "subnetwork" {
 
 module "controller" {
   source = "./controller"
+  name = var.name
 
   region               = var.region
   zone                 = var.zone
@@ -28,6 +29,7 @@ module "controller" {
   subnet_ids           = var.subnet_ids
   controller_subnet_id = var.controller_subnet_id
   domain               = var.domain
+  controller_ami       = lookup(var.controller_amis, var.region, null)
 
   external_access = {}
 

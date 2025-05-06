@@ -19,7 +19,7 @@ data "aws_ami" "ubuntu24" {
 }
 
 data "aws_subnet" "subnetwork" {
-  id = var.controller_subnet_id
+  id = var.subnet_ids[0]
 }
 
 resource "null_resource" "check_permissions" {
@@ -34,8 +34,8 @@ EOT
 }
 
 resource "aws_instance" "controller" {
-  depends_on                  = [null_resource.check_permissions]
-  ami                         = data.aws_ami.ubuntu24.id
+  depends_on                  = [null_resource.check_permissions, aws_db_instance.postgres_instance]
+  ami                         = var.controller_ami != null ? var.controller_ami : data.aws_ami.ubuntu24.id
   instance_type               = var.controller_machine_type
   subnet_id                   = var.controller_subnet_id
   associate_public_ip_address = local.allow_public_access
@@ -61,12 +61,14 @@ resource "aws_instance" "controller" {
     Name = var.name
   }
 
-  user_data = templatefile("${path.module}/data/always_run.txt", {
-    script = templatefile("${path.module}/data/controller_start.sh", {
-      domain   = var.domain,
-      instance = var.name,
-      //gke_auth = var.gke_cluster != null ? "gcloud container clusters get-credentials ${var.gke_cluster.cluster_id} --location ${var.gke_cluster.location}  --project ${var.gke_cluster.project}" : ""
-    })
+  user_data = var.controller_ami != null ? base64encode(<<EOF
+#!/bin/bash
+VELDA_INST=${var.name} /opt/velda/bin/setup.sh
+EOF
+    ) : templatefile("${path.module}/data/always_run.txt", {
+      script = templatefile("${path.module}/data/controller_start.sh", {
+        instance = var.name,
+      })
   })
 
   lifecycle {

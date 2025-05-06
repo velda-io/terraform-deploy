@@ -16,7 +16,7 @@ resource "aws_iam_role" "controller_role" {
 }
 
 resource "aws_iam_policy" "controller_policy" {
-  name        = "SSMS3Policy"
+  name        = "${var.name}-SSMS3Policy"
   description = "Policy to allow EC2 instance to read from SSM and S3"
 
   policy = jsonencode({
