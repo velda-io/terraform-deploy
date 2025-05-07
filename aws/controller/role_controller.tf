@@ -65,10 +65,10 @@ resource "aws_iam_policy" "controller_policy" {
         Resource = "*",
         Condition = {
           ArnEquals = {
-            "ec2:LaunchTemplate": "arn:aws:ec2:${var.region}:*:launch-template/*",
+            "ec2:LaunchTemplate" : "arn:aws:ec2:${var.region}:*:launch-template/*",
           }
           Bool = {
-            "ec2:IsLaunchTemplateResource": "true"
+            "ec2:IsLaunchTemplateResource" : "true"
           }
         }
       },

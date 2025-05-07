@@ -1,14 +1,14 @@
 variable "controller_output" {
   description = "The output of the controller module for agent"
-  type        = object({
-    name = string
-    region = string
-    zone = string
-    vpc_id = string
-    subnet_ids = list(string)
+  type = object({
+    name               = string
+    region             = string
+    zone               = string
+    vpc_id             = string
+    subnet_ids         = list(string)
     security_group_ids = list(string)
-    controller_ip = string
-    instance_profile = string
+    controller_ip      = string
+    instance_profile   = string
   })
 }
 
@@ -32,5 +32,5 @@ variable "pool" {
 variable "autoscale_config" {
   description = "The autoscale configuration"
   // See proto of AgentPool_AutoScaler
-  type        = any
+  type = any
 }

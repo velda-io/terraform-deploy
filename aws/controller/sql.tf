@@ -18,6 +18,7 @@ resource "aws_db_instance" "postgres_instance" {
   password               = random_password.db_password[0].result
   db_subnet_group_name   = aws_db_subnet_group.default.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
+  storage_encrypted      = true
   skip_final_snapshot    = true
 }
 

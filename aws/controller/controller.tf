@@ -34,7 +34,7 @@ EOT
 }
 
 resource "aws_instance" "controller" {
-  depends_on = [null_resource.check_permissions]
+  depends_on                  = [null_resource.check_permissions]
   ami                         = data.aws_ami.ubuntu24.id
   instance_type               = var.controller_machine_type
   subnet_id                   = var.controller_subnet_id
@@ -75,7 +75,7 @@ resource "aws_instance" "controller" {
 }
 
 resource "aws_eip" "lb" {
-  count = local.allow_public_access ? 1 : 0
+  count    = local.allow_public_access ? 1 : 0
   instance = aws_instance.controller.id
   domain   = "vpc"
 }

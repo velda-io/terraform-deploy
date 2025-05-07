@@ -95,21 +95,21 @@ variable "gke_cluster" {
 
 variable "bin_authorized" {
   description = "Authorized for binary access"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "controller_subnet_id" {
   description = "Controller subnet"
-  type = string
+  type        = string
 }
 
 variable "connection_source" {
   description = "Source of connection to the controller"
-  type        = list(object({
-    cidr_ipv4 = optional(string),
-    cidr_ipv6 = optional(string),
-    prefix_list_id = optional(string),
+  type = list(object({
+    cidr_ipv4                    = optional(string),
+    cidr_ipv6                    = optional(string),
+    prefix_list_id               = optional(string),
     referenced_security_group_id = optional(string),
   }))
 }

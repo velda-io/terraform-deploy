@@ -1,5 +1,5 @@
 resource "aws_launch_template" "agent" {
-  name   = "${var.controller_output.name}-agent-${var.pool}"
+  name          = "${var.controller_output.name}-agent-${var.pool}"
   image_id      = var.agent_ami
   instance_type = var.instance_type
 
@@ -22,14 +22,14 @@ resource "aws_launch_template" "agent" {
   }
   tags = {
     VeldaApp = var.controller_output.name
-    Pool = var.pool
+    Pool     = var.pool
   }
 
   tag_specifications {
     resource_type = "instance"
     tags = {
       VeldaApp = var.controller_output.name
-      Pool = var.pool
+      Pool     = var.pool
     }
   }
   update_default_version = true
