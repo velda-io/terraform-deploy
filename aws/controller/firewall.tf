@@ -4,39 +4,51 @@ resource "aws_security_group" "controller_sg" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "http_ingress" {
-  count             = local.allow_public_access ? 1 : 0
+  for_each = { for k, v in var.connection_source : k => v}
   security_group_id = aws_security_group.controller_sg.id
   from_port         = 80
   to_port           = 80
   ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4         = lookup(each.value, "cidr_ipv4", null)
+  cidr_ipv6         = lookup(each.value, "cidr_ipv6", null)
+  prefix_list_id    = lookup(each.value, "prefix_list_id", null)
+  referenced_security_group_id = lookup(each.value, "referenced_security_group_id", null)
 }
 
 resource "aws_vpc_security_group_ingress_rule" "https_ingress" {
-  count             = local.allow_public_access ? 1 : 0
+  for_each = { for k, v in var.connection_source : k => v}
   security_group_id = aws_security_group.controller_sg.id
   from_port         = 443
   to_port           = 443
   ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4         = lookup(each.value, "cidr_ipv4", null)
+  cidr_ipv6         = lookup(each.value, "cidr_ipv6", null)
+  prefix_list_id    = lookup(each.value, "prefix_list_id", null)
+  referenced_security_group_id = lookup(each.value, "referenced_security_group_id", null)
 }
 
 resource "aws_vpc_security_group_ingress_rule" "custom_port_ingress" {
-  count             = local.allow_public_access ? 1 : 0
+  for_each = { for k, v in var.connection_source : k => v}
   security_group_id = aws_security_group.controller_sg.id
   from_port         = 2222
   to_port           = 2222
   ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4         = lookup(each.value, "cidr_ipv4", null)
+  cidr_ipv6         = lookup(each.value, "cidr_ipv6", null)
+  prefix_list_id    = lookup(each.value, "prefix_list_id", null)
+  referenced_security_group_id = lookup(each.value, "referenced_security_group_id", null)
 }
 
 resource "aws_vpc_security_group_ingress_rule" "grpc_ingress" {
-  count             = local.allow_public_access ? 1 : 0
+  for_each = { for k, v in var.connection_source : k => v}
   security_group_id = aws_security_group.controller_sg.id
   from_port         = 50051
   to_port           = 50051
   ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4         = lookup(each.value, "cidr_ipv4", null)
+  cidr_ipv6         = lookup(each.value, "cidr_ipv6", null)
+  prefix_list_id    = lookup(each.value, "prefix_list_id", null)
+  referenced_security_group_id = lookup(each.value, "referenced_security_group_id", null)
 }
 
 resource "aws_vpc_security_group_ingress_rule" "agent_ingress" {

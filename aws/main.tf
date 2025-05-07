@@ -48,6 +48,8 @@ module "controller" {
   }
 
   bin_authorized = var.bin_authorized
+
+  connection_source = var.connection_source
 }
 
 module "agent" {
