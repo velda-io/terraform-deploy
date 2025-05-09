@@ -64,6 +64,7 @@ module "agent" {
   agent_ami        = each.value.ami != null ? each.value.ami : var.default_amis[each.value.ami_type]
   instance_type    = each.value.instance_type
   autoscale_config = each.value.autoscale_config
+  init_script_content = each.value.init_script_content
 }
 
 /*

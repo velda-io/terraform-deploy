@@ -33,5 +33,11 @@ resource "aws_launch_template" "agent" {
     }
   }
   update_default_version = true
+
+  user_data = var.init_script_content != null ? base64encode(var.init_script_content) : null
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 

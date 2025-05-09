@@ -53,6 +53,7 @@ variable "pools" {
     ami              = optional(string)
     ami_type         = optional(string)
     autoscale_config = any
+    init_script_content = optional(string)
   }))
   default = []
 }

@@ -34,3 +34,9 @@ variable "autoscale_config" {
   // See proto of AgentPool_AutoScaler
   type = any
 }
+
+variable "init_script_content" {
+  description = "The initialization script for the agent"
+  type        = string
+  default = null
+}
