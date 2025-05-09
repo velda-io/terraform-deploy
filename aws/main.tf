@@ -42,6 +42,8 @@ module "controller" {
     }
   )
 
+  controller_machine_type = var.controller_machine_type
+
   https_certs = var.https_certs == null ? null : {
     cert = file(var.https_certs.cert)
     key  = file(var.https_certs.key)

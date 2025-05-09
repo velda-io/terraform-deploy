@@ -85,3 +85,9 @@ variable "connection_source" {
     cidr_ipv4 = "0.0.0.0/0"
   }]
 }
+
+variable "controller_machine_type" {
+  description = "Machine type of controller instance"
+  type        = string
+  default     = "t2.micro"
+}
