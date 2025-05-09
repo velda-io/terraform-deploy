@@ -58,6 +58,11 @@ variable "pools" {
   default = []
 }
 
+variable "data_disk_size" {
+  description = "Size of disk for user data"
+  type        = number
+  default     = 20
+}
 
 variable "default_amis" {
   description = "Default AMIs by machine types"

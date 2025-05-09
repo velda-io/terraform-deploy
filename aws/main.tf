@@ -52,6 +52,8 @@ module "controller" {
   bin_authorized = var.bin_authorized
 
   connection_source = var.connection_source
+
+  data_disk_size = var.data_disk_size
 }
 
 module "agent" {
