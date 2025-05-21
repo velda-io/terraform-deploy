@@ -38,7 +38,7 @@ resource "aws_instance" "controller" {
   ami                         = var.controller_ami != null ? var.controller_ami : data.aws_ami.ubuntu24.id
   instance_type               = var.controller_machine_type
   subnet_id                   = var.controller_subnet_id
-  associate_public_ip_address = local.allow_public_access
+  associate_public_ip_address = var.external_access.use_controller_external_ip || var.external_access.use_eip
 
   root_block_device {
     volume_size = 10
@@ -77,7 +77,7 @@ EOF
 }
 
 resource "aws_eip" "lb" {
-  count    = local.allow_public_access ? 1 : 0
+  count    = var.external_access.use_eip ? 1 : 0
   instance = aws_instance.controller.id
   domain   = "vpc"
 }

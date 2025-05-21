@@ -106,6 +106,10 @@ static_resources:
                 filename: "/etc/envoy/cert.pem"  # Replace with your certificate path
               private_key:
                 filename: "/etc/envoy/key.pem"   # Replace with your private key path
+            alpn_protocols:
+            - h2c
+            - h2
+            - http/1.1
   %{ endif }
 
   clusters:

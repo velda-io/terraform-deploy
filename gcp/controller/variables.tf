@@ -96,10 +96,13 @@ variable "google_oauth_cli" {
 }
 
 variable "external_access" {
-  description = "Optionsl for public IP access. Default to disallow"
+  description = "Options for public IP access. Default to disallow"
   type = object({
-    ip_address   = optional(string, null), // If not set, default to ephermeral public IP.
+    server_ip_address   = optional(string, null), // If not set, default to ephermeral public IP.
     network_tier = optional(string, "PREMIUM")
+    use_proxy    = optional(bool, true) // Whether the client should use a proxy to connect to the agent.
+    allowed_source_ranges = optional(list(string), ["0.0.0.0/0"]) // Source ranges for the firewall rule
+    allowed_source_tags   = optional(list(string), []) // Source tags for the firewall rule
   })
   default = null
 }
@@ -118,7 +121,7 @@ variable "gke_cluster" {
     cluster_id = string,
     namespace  = string,
     # Whether to use internal IP to connect to the endpoint.
-    internal_ip       = optional(bool, false),
+    internal_ip = optional(bool, false),
   })
   default = null
 }

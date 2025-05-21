@@ -58,7 +58,7 @@ locals {
       ] : []
     )
     },
-    var.allow_public_access ? {
+    var.use_proxy ? {
       jump_server = {
         listen_address   = ":2222"
         host_private_key = "/run/velda/jumphost"

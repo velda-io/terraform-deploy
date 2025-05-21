@@ -49,9 +49,9 @@ locals {
 
 resource "null_resource" "update_sa_permissions" {
   triggers = {
-    controller_sa = google_service_account.controller_sa.email
-    agent_sa      = google_service_account.agent_sa.email
-    project_id    = data.google_project.project.project_id
+    controller_sa  = google_service_account.controller_sa.email
+    agent_sa       = google_service_account.agent_sa.email
+    project_id     = data.google_project.project.project_id
     access_granted = var.access_granted
   }
 
@@ -80,7 +80,8 @@ module "controller" {
   network    = var.network
   domain     = var.domain
 
-  external_access = {}
+  external_access = var.external_access
+  use_nat_gateway = var.external_access.use_nat_gateway
 
   configs    = var.configs
   agent_cidr = [data.google_compute_subnetwork.subnetwork.ip_cidr_range]

@@ -9,7 +9,7 @@ variable "controller_output" {
     subnetwork = string
     controller_ip = string
     agent_service_account = string
-    has_external_ip = bool
+    use_nat_gateway = bool
     config_gcs_bucket = string
     config_gcs_prefix = string
   })

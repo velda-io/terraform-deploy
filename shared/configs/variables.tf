@@ -54,8 +54,8 @@ variable "configs" {
   default = {}
 }
 
-variable "allow_public_access" {
-  description = "Allow public access to the server"
+variable "use_proxy" {
+  description = "Use proxy server to access agents"
   type        = bool
   default     = false
 }

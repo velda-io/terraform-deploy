@@ -18,8 +18,9 @@ resource "google_compute_instance_template" "agent_template" {
     network    = var.controller_output.network
     subnetwork = var.controller_output.subnetwork
 
+    // Only allocate a public IP if the NAT gateway is not used
     dynamic "access_config" {
-      for_each = var.controller_output.has_external_ip ? [1] : []
+      for_each = var.controller_output.use_nat_gateway ? [1] : []
       content {
         network_tier = "STANDARD"
       }
@@ -49,12 +50,12 @@ resource "google_compute_instance_template" "agent_template" {
     velda_host     = var.controller_output.controller_ip
     velda_config = yamlencode({
       broker = {
-        address = "${var.controller_output.controller_ip}:50051"
+        address = "http://${var.controller_output.controller_ip}:50051"
       }
     })
   }
 
-  tags = ["${var.controller_output.name}", "${var.pool}"]
+  tags = ["${var.controller_output.name}-agent", "${var.pool}"]
 
   lifecycle {
     create_before_destroy = true

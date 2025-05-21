@@ -11,10 +11,10 @@ output "agent_configs" {
     zone          = var.zone
     network       = var.network
     subnetwork    = var.subnetwork
-    controller_ip = google_compute_instance.controller.network_interface[0].network_ip
+    controller_ip = google_compute_address.internal_ip.address
 
     agent_service_account = data.google_service_account.agent_sa.email
-    has_external_ip      = !var.use_nat_gateway
+    use_nat_gateway = var.use_nat_gateway
 
     config_gcs_bucket = google_storage_bucket.pool_configs.name
     config_gcs_prefix = "pools/"

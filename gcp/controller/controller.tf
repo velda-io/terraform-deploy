@@ -1,6 +1,10 @@
-locals {
-  allow_public_access = var.external_access != null
+resource "google_compute_address" "internal_ip" {
+  name         = "${var.name}-internal-ip"
+  subnetwork   = var.subnetwork
+  region       = var.region
+  address_type = "INTERNAL"
 }
+
 resource "google_compute_instance" "controller" {
   project = var.project
 
@@ -18,7 +22,7 @@ resource "google_compute_instance" "controller" {
     device_name = "${var.name}-bootdisk"
 
     initialize_params {
-      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2404-noble-amd64-v20241219"
+      image = "projects/skyworkstation/global/images/velda-controller-1747698006"
       size  = 10
       type  = "pd-standard"
     }
@@ -29,16 +33,17 @@ resource "google_compute_instance" "controller" {
 
   network_interface {
     dynamic "access_config" {
-      for_each = local.allow_public_access ? [1] : []
+      for_each = var.external_access.use_proxy ? [1] : []
       content {
         network_tier = var.external_access.network_tier
-        nat_ip       = var.external_access.ip_address
+        nat_ip       = var.external_access.server_ip_address
       }
     }
 
     queue_count = 0
     stack_type  = "IPV4_ONLY"
     subnetwork  = var.subnetwork
+    network_ip = google_compute_address.internal_ip.address
   }
 
   scheduling {
@@ -54,12 +59,9 @@ resource "google_compute_instance" "controller" {
     ]
   }
 
-  tags = concat([
-    "http-server",
-    "https-server",
-    ],
-    local.allow_public_access ? ["${var.name}-server"] : []
-  )
+  tags = [
+    "${var.name}-server",
+  ]
 
   metadata = merge(
     {
@@ -69,7 +71,10 @@ resource "google_compute_instance" "controller" {
       auth-private-key = sensitive(tls_private_key.auth_token_key.private_key_pem)
       velda-domain     = var.domain
       ops-agent-config = file("${path.module}/data/ops_agent_config.yaml")
-      startup-script   = file("${path.module}/data/controller_start.sh")
+      startup-script   = <<EOF
+#!/bin/bash
+VELDA_INST=${var.name} /opt/velda/bin/setup.sh
+EOF
     },
     module.configs.configs,
     var.gke_cluster != null ? {
@@ -80,5 +85,6 @@ resource "google_compute_instance" "controller" {
 
   lifecycle {
     ignore_changes = [metadata["ssh-keys"]]
+    create_before_destroy = false
   }
 }

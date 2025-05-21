@@ -22,28 +22,28 @@ resource "aws_secretsmanager_secret_version" "auth_token_private_value" {
 }
 
 resource "tls_private_key" "jumphost_key" {
-  count     = local.allow_public_access ? 1 : 0
+  count     = var.external_access.use_proxy ? 1 : 0
   algorithm = "ED25519"
 }
 
 resource "aws_secretsmanager_secret" "jumphosts_public_key" {
-  count = local.allow_public_access ? 1 : 0
+  count = var.external_access.use_proxy ? 1 : 0
   name  = "${var.name}/jumphost-public"
 }
 
 resource "aws_secretsmanager_secret_version" "jumphost_public_value" {
-  count         = local.allow_public_access ? 1 : 0
+  count         = var.external_access.use_proxy ? 1 : 0
   secret_id     = aws_secretsmanager_secret.jumphosts_public_key[0].id
   secret_string = tls_private_key.jumphost_key[0].public_key_openssh
 }
 
 resource "aws_secretsmanager_secret" "jumphosts_private_key" {
-  count = local.allow_public_access ? 1 : 0
+  count = var.external_access.use_proxy ? 1 : 0
   name  = "${var.name}/jumphost-private"
 }
 
 resource "aws_secretsmanager_secret_version" "jumphost_private_value" {
-  count         = local.allow_public_access ? 1 : 0
+  count         = var.external_access.use_proxy ? 1 : 0
   secret_id     = aws_secretsmanager_secret.jumphosts_private_key[0].id
   secret_string = tls_private_key.jumphost_key[0].private_key_pem
 }

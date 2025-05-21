@@ -4,12 +4,12 @@ resource "tls_private_key" "auth_token_key" {
 }
 
 resource "tls_private_key" "jumphost_key" {
-  count     = local.allow_public_access ? 1 : 0
+  count     = var.external_access.use_proxy ? 1 : 0
   algorithm = "ED25519"
 }
 
 resource "google_secret_manager_secret" "jumphosts_public_key" {
-  count     = local.allow_public_access ? 1 : 0
+  count     = var.external_access.use_proxy ? 1 : 0
   secret_id = "${var.name}-jumphost-public"
 
   replication {
@@ -22,20 +22,20 @@ resource "google_secret_manager_secret" "jumphosts_public_key" {
 }
 
 resource "google_secret_manager_secret_version" "jumphost_public_value" {
-  count       = local.allow_public_access ? 1 : 0
+  count       = var.external_access.use_proxy ? 1 : 0
   secret      = google_secret_manager_secret.jumphosts_public_key[0].id
   secret_data = tls_private_key.jumphost_key[0].public_key_openssh
 }
 
 resource "google_secret_manager_secret_iam_member" "jumphost_public_access" {
-  count     = local.allow_public_access ? 1 : 0
+  count     = var.external_access.use_proxy ? 1 : 0
   secret_id = google_secret_manager_secret.jumphosts_public_key[0].id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_service_account.controller_sa.email}"
 }
 
 resource "google_secret_manager_secret" "jumphosts_private_key" {
-  count     = local.allow_public_access ? 1 : 0
+  count     = var.external_access.use_proxy ? 1 : 0
   secret_id = "${var.name}-jumphost-private"
 
   replication {
@@ -48,13 +48,13 @@ resource "google_secret_manager_secret" "jumphosts_private_key" {
 }
 
 resource "google_secret_manager_secret_version" "jumphost_private_value" {
-  count       = local.allow_public_access ? 1 : 0
+  count       = var.external_access.use_proxy ? 1 : 0
   secret      = google_secret_manager_secret.jumphosts_private_key[0].id
   secret_data = tls_private_key.jumphost_key[0].private_key_pem
 }
 
 resource "google_secret_manager_secret_iam_member" "jumphost_private_access" {
-  count     = local.allow_public_access ? 1 : 0
+  count     = var.external_access.use_proxy ? 1 : 0
   secret_id = google_secret_manager_secret.jumphosts_private_key[0].id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_service_account.controller_sa.email}"

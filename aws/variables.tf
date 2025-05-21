@@ -104,3 +104,15 @@ variable "controller_machine_type" {
   type        = string
   default     = "t2.micro"
 }
+
+variable "external_access" {
+  description = "Optionsl for public IP access. Default to disallow"
+  type = object({
+    use_proxy                  = optional(bool, false),
+    ip_address                 = optional(string, null), // If not set, default to ephermeral public IP.
+    use_eip                    = optional(bool, false),  // Whether to use EIP for the controller.
+    use_nat                    = optional(bool, false),  // Whether to use NAT in the network.
+    use_controller_external_ip = optional(bool, false),  // Whether controller has external IP.
+  })
+  default = {}
+}

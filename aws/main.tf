@@ -31,7 +31,7 @@ module "controller" {
   domain               = var.domain
   controller_ami       = lookup(var.controller_amis, var.region, null)
 
-  external_access = {}
+  external_access = var.external_access
 
   configs = merge(
     var.configs,
