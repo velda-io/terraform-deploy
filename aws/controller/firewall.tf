@@ -57,10 +57,10 @@ resource "aws_vpc_security_group_ingress_rule" "grpc_ingress" {
 
 resource "aws_vpc_security_group_ingress_rule" "agent_ingress" {
   security_group_id            = aws_security_group.controller_sg.id
-  description                  = "from_agent"
-  from_port                    = -1
-  to_port                      = -1
-  ip_protocol                  = "-1"
+  description                  = "NFS from_agent"
+  from_port                    = 2049
+  to_port                      = 2049
+  ip_protocol                  = "tcp"
   referenced_security_group_id = aws_security_group.agent_sg.id
 }
 
