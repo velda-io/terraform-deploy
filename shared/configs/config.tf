@@ -32,7 +32,13 @@ locals {
           client_id     = var.configs.google_oauth_cli.client_id
           client_secret = var.configs.google_oauth_cli.secret
         }
-    } : {})
+    } : {},
+      var.enable_saml ? {
+        saml = {
+          sp_public_key  = "/run/velda/saml.pub"
+          sp_private_key = "/run/velda/saml"
+        }
+      } : {})
     storage = {
       zfs = {
         pool = "zpool"

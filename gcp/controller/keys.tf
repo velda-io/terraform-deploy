@@ -10,8 +10,8 @@ resource "tls_private_key" "jumphost_key" {
 
 resource "tls_private_key" "saml_sp_key" {
   count      = var.enable_saml ? 1 : 0
-  algorithm  = "ECDSA"
-  ecdsa_curve = "P256"
+  algorithm  = "RSA"
+  rsa_bits   = 2048
 }
 
 resource "google_secret_manager_secret" "jumphosts_public_key" {

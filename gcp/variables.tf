@@ -103,9 +103,3 @@ variable "external_access" {
 
   }
 }
-
-variable "enable_saml" {
-  description = "Enable SAML authentication and generate SAML keypair."
-  type        = bool
-  default     = false
-}

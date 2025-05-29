@@ -93,7 +93,7 @@ module "controller" {
 
   base_instance_images = var.base_instance_images
 
-  enable_saml = var.enable_saml
+  enable_saml = lookup(var.configs, "enable_saml", false)
 }
 
 module "agent" {

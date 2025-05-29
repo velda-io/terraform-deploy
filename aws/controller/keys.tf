@@ -47,3 +47,31 @@ resource "aws_secretsmanager_secret_version" "jumphost_private_value" {
   secret_id     = aws_secretsmanager_secret.jumphosts_private_key[0].id
   secret_string = tls_private_key.jumphost_key[0].private_key_pem
 }
+
+resource "tls_private_key" "saml_sp_key" {
+  count      = var.enable_saml ? 1 : 0
+  algorithm  = "RSA"
+  rsa_bits   = 2048
+}
+
+resource "aws_secretsmanager_secret" "saml_sp_public_key" {
+  count = var.enable_saml ? 1 : 0
+  name  = "${var.name}/saml-sp-public-key"
+}
+
+resource "aws_secretsmanager_secret_version" "saml_sp_public_value" {
+  count         = var.enable_saml ? 1 : 0
+  secret_id     = aws_secretsmanager_secret.saml_sp_public_key[0].id
+  secret_string = tls_private_key.saml_sp_key[0].public_key_pem
+}
+
+resource "aws_secretsmanager_secret" "saml_sp_private_key" {
+  count = var.enable_saml ? 1 : 0
+  name  = "${var.name}/saml-sp-private-key"
+}
+
+resource "aws_secretsmanager_secret_version" "saml_sp_private_value" {
+  count         = var.enable_saml ? 1 : 0
+  secret_id     = aws_secretsmanager_secret.saml_sp_private_key[0].id
+  secret_string = tls_private_key.saml_sp_key[0].private_key_pem
+}

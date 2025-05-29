@@ -74,3 +74,9 @@ variable "agent_cidrs" {
   type        = list(string)
   default     = ["*"]
 }
+
+variable "enable_saml" {
+  description = "Enable SAML authentication"
+  type        = bool
+  default     = false
+}

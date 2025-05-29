@@ -122,3 +122,9 @@ variable "controller_ami" {
   type        = string
   default     = null
 }
+
+variable "enable_saml" {
+  description = "Enable SAML authentication and generate SAML SP keypair."
+  type        = bool
+  default     = false
+}
