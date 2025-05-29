@@ -90,14 +90,10 @@ module "controller" {
     cert = file(var.https_certs.cert)
     key  = file(var.https_certs.key)
   }
-}
 
-module "image_ubuntu24" {
-  source              = "./controller/image"
-  for_each            = { for image in var.base_images : image.name => image }
-  image_name          = each.value.name
-  docker_name         = each.value.docker_name
-  controller_instance = module.controller.controller
+  base_instance_images = var.base_instance_images
+
+  enable_saml = var.enable_saml
 }
 
 module "agent" {
@@ -108,7 +104,7 @@ module "agent" {
 
   pool             = each.value.name
   instance_type    = each.value.machine_type
-  agent_image      = each.value.image != null ? each.value.image : var.image_version[each.value.image_type]
+  agent_image      = each.value.image != null ? each.value.image : var.agent_image_version[each.value.image_type]
   autoscale_config = each.value.autoscale_config
 
   accelerator_count = each.value.accelerator_count

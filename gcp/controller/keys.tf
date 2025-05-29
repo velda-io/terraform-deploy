@@ -8,6 +8,12 @@ resource "tls_private_key" "jumphost_key" {
   algorithm = "ED25519"
 }
 
+resource "tls_private_key" "saml_sp_key" {
+  count      = var.enable_saml ? 1 : 0
+  algorithm  = "ECDSA"
+  ecdsa_curve = "P256"
+}
+
 resource "google_secret_manager_secret" "jumphosts_public_key" {
   count     = var.external_access.use_proxy ? 1 : 0
   secret_id = "${var.name}-jumphost-public"
@@ -80,4 +86,40 @@ resource "google_project_iam_member" "agent_sa_secret_access" {
   project = var.project
   member  = "serviceAccount:${data.google_service_account.agent_sa.email}"
   role    = "roles/secretmanager.secretAccessor"
+}
+
+resource "google_secret_manager_secret" "saml_sp_public_key" {
+  count     = var.enable_saml ? 1 : 0
+  secret_id = "${var.name}-saml-sp-public-key"
+  replication {
+    user_managed {
+      replicas {
+        location = var.region
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "saml_sp_public_key" {
+  count       = var.enable_saml ? 1 : 0
+  secret      = google_secret_manager_secret.saml_sp_public_key[0].id
+  secret_data = tls_private_key.saml_sp_key[0].public_key_openssh
+}
+
+resource "google_secret_manager_secret" "saml_sp_private_key" {
+  count     = var.enable_saml ? 1 : 0
+  secret_id = "${var.name}-saml-sp-private-key"
+  replication {
+    user_managed {
+      replicas {
+        location = var.region
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "saml_sp_private_key" {
+  count       = var.enable_saml ? 1 : 0
+  secret      = google_secret_manager_secret.saml_sp_private_key[0].id
+  secret_data = tls_private_key.saml_sp_key[0].private_key_pem
 }

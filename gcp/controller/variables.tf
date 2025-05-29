@@ -130,3 +130,18 @@ variable "agent_cidr" {
   description = "CIDR for agent pool"
   type        = list(string)
 }
+
+variable "base_instance_images" {
+  description = "Base images for the deployment"
+  type = list(object({
+    name        = string
+    docker_name = string
+  }))
+  default = []
+}
+
+variable "enable_saml" {
+  description = "Enable SAML authentication and generate SAML keypair."
+  type        = bool
+  default     = false
+}

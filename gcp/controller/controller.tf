@@ -22,7 +22,7 @@ resource "google_compute_instance" "controller" {
     device_name = "${var.name}-bootdisk"
 
     initialize_params {
-      image = "projects/skyworkstation/global/images/velda-controller-1747698006"
+      image = "projects/skyworkstation/global/images/velda-controller-1748064982"
       size  = 10
       type  = "pd-standard"
     }
@@ -73,7 +73,14 @@ resource "google_compute_instance" "controller" {
       ops-agent-config = file("${path.module}/data/ops_agent_config.yaml")
       startup-script   = <<EOF
 #!/bin/bash
-VELDA_INST=${var.name} /opt/velda/bin/setup.sh
+cat << EOT > /tmp/velda_install.json
+${jsonencode({
+  "instance_id": var.name,
+  "base_instance_images": var.base_instance_images,
+  "zfs_disks": ["/dev/disk/by-label/zpool"],
+})}
+EOT
+/opt/velda/bin/setup.sh /tmp/velda_install.json
 EOF
     },
     module.configs.configs,

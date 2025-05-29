@@ -63,7 +63,7 @@ variable "gce_pools" {
   default = []
 }
 
-variable "base_images" {
+variable "base_instance_images" {
   description = "Base images for the deployment"
   type = list(object({
     name        = string
@@ -72,7 +72,7 @@ variable "base_images" {
   default = []
 }
 
-variable "image_version" {
+variable "agent_image_version" {
   description = "The version of the image"
   type        = map(string)
 }
@@ -102,4 +102,10 @@ variable "external_access" {
   default = {
 
   }
+}
+
+variable "enable_saml" {
+  description = "Enable SAML authentication and generate SAML keypair."
+  type        = bool
+  default     = false
 }
