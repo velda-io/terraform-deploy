@@ -80,3 +80,9 @@ variable "enable_saml" {
   type        = bool
   default     = false
 }
+
+variable "include_legacy_configs" {
+  description = "Include legacy configs which can be configured after installation"
+  type        = bool
+  default     = false
+}

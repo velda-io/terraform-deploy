@@ -7,6 +7,7 @@ module "configs" {
   use_proxy    = var.external_access.use_proxy
   agent_cidrs  = var.agent_cidr
   https_certs  = var.https_certs
+  enable_saml  = lookup(var.configs, "enable_saml", false)
   configs = merge(
     var.configs,
     {

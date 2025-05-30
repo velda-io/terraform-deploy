@@ -14,6 +14,27 @@ resource "tls_private_key" "saml_sp_key" {
   rsa_bits   = 2048
 }
 
+
+resource "tls_self_signed_cert" "sp" {
+  count = var.enable_saml ? 1 : 0
+  private_key_pem = tls_private_key.saml_sp_key[0].private_key_pem
+
+  subject {
+    common_name  = "${var.domain}"
+    organization = "Your Company"
+  }
+
+  validity_period_hours = 87600 # 10 years
+  early_renewal_hours   = 8760
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+  ]
+
+  is_ca_certificate = false
+}
+
 resource "google_secret_manager_secret" "jumphosts_public_key" {
   count     = var.external_access.use_proxy ? 1 : 0
   secret_id = "${var.name}-jumphost-public"
@@ -103,7 +124,7 @@ resource "google_secret_manager_secret" "saml_sp_public_key" {
 resource "google_secret_manager_secret_version" "saml_sp_public_key" {
   count       = var.enable_saml ? 1 : 0
   secret      = google_secret_manager_secret.saml_sp_public_key[0].id
-  secret_data = tls_private_key.saml_sp_key[0].public_key_openssh
+  secret_data = tls_self_signed_cert.sp[0].cert_pem
 }
 
 resource "google_secret_manager_secret" "saml_sp_private_key" {
@@ -122,4 +143,17 @@ resource "google_secret_manager_secret_version" "saml_sp_private_key" {
   count       = var.enable_saml ? 1 : 0
   secret      = google_secret_manager_secret.saml_sp_private_key[0].id
   secret_data = tls_private_key.saml_sp_key[0].private_key_pem
+}
+resource "google_secret_manager_secret_iam_member" "saml_sp_public_access" {
+  count     = var.enable_saml ? 1 : 0
+  secret_id = google_secret_manager_secret.saml_sp_public_key[0].id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_service_account.controller_sa.email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "saml_sp_private_access" {
+  count     = var.enable_saml ? 1 : 0
+  secret_id = google_secret_manager_secret.saml_sp_private_key[0].id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_service_account.controller_sa.email}"
 }

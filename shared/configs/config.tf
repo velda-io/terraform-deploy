@@ -5,6 +5,7 @@ locals {
       http_address = ":8081"
       host         = var.domain
       port         = 8080
+      use_https    = var.https_certs != null
     }
     database = {
       sql = {
@@ -15,30 +16,32 @@ locals {
     user_auth = merge({
       access_token_private_key = "/run/velda/access-token-private-key.pem"
       access_token_public_key  = "/run/velda/access-token-public-key.pem"
-      access_token_ttl_mins    = 60
-      refresh_token_ttl_mins   = 43200
       },
-      var.configs.allow_public_register ? {
+      var.include_legacy_configs ? {
+        access_token_ttl_mins  = 60
+        refresh_token_ttl_mins = 43200
+      } : {},
+      var.include_legacy_configs && var.configs.allow_public_register ? {
         allow_public_registration = true
       } : {},
-      var.configs.google_oauth_web != null ? {
+      var.include_legacy_configs && var.configs.google_oauth_web != null ? {
         google_web = {
           client_id     = var.configs.google_oauth_web.client_id
           client_secret = var.configs.google_oauth_web.secret
         }
       } : {},
-      var.configs.google_oauth_cli != null ? {
+      var.include_legacy_configs && var.configs.google_oauth_cli != null ? {
         google_cli = {
           client_id     = var.configs.google_oauth_cli.client_id
           client_secret = var.configs.google_oauth_cli.secret
         }
-    } : {},
+      } : {},
       var.enable_saml ? {
         saml = {
-          sp_public_key  = "/run/velda/saml.pub"
-          sp_private_key = "/run/velda/saml"
+          sp_cert_path = "/run/velda/saml.pub"
+          sp_key_path  = "/run/velda/saml"
         }
-      } : {})
+    } : {})
     storage = {
       zfs = {
         pool = "zpool"
@@ -72,7 +75,7 @@ locals {
         host_public_key  = "/run/velda/jumphost.pub"
       }
     } : {},
-    length(var.configs.default_instances) > 0 ? {
+    var.include_legacy_configs && length(var.configs.default_instances) > 0 ? {
       default_instances = var.configs.default_instances
     } : {}
   )
