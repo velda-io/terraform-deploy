@@ -61,6 +61,10 @@ static_resources:
                     route:
                       cluster: grpc_service
                       prefix_rewrite: "/"
+                  - match:
+                      prefix: "/velda."
+                    route:
+                      cluster: grpc_service
                   # Route `/auth/` to localhost:8080
                   - match:
                       prefix: "/auth/"
