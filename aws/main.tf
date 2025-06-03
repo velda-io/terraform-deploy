@@ -56,6 +56,8 @@ module "controller" {
   connection_source = var.connection_source
 
   data_disk_size = var.data_disk_size
+
+  enable_saml = lookup(var.configs, "enable_saml", false)
 }
 
 module "agent" {
