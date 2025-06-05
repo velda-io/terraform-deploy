@@ -48,11 +48,11 @@ variable "configs" {
 variable "pools" {
   description = "Agent pools based on AWS"
   type = list(object({
-    name             = string
-    instance_type    = string
-    ami              = optional(string)
-    ami_type         = optional(string)
-    autoscale_config = any
+    name                = string
+    instance_type       = string
+    ami                 = optional(string)
+    ami_type            = optional(string)
+    autoscale_config    = any
     init_script_content = optional(string)
   }))
   default = []
@@ -66,7 +66,7 @@ variable "data_disk_size" {
 variable "controller_amis" {
   description = "Controller AMIs by region"
   type        = map(string)
-  default     = {
+  default = {
     "us-east-1" = "ami-0dcf02acfb11df3d3"
   }
 }
@@ -115,4 +115,13 @@ variable "external_access" {
     use_controller_external_ip = optional(bool, false),  // Whether controller has external IP.
   })
   default = {}
+}
+
+variable "base_instance_images" {
+  description = "Base images for the deployment"
+  type = list(object({
+    name        = string
+    docker_name = string
+  }))
+  default = []
 }

@@ -49,9 +49,9 @@ resource "aws_secretsmanager_secret_version" "jumphost_private_value" {
 }
 
 resource "tls_private_key" "saml_sp_key" {
-  count      = var.enable_saml ? 1 : 0
-  algorithm  = "RSA"
-  rsa_bits   = 2048
+  count     = var.enable_saml ? 1 : 0
+  algorithm = "RSA"
+  rsa_bits  = 2048
 }
 
 resource "aws_secretsmanager_secret" "saml_sp_public_key" {

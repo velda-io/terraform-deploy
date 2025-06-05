@@ -33,6 +33,21 @@ EOT
   }
 }
 
+resource "aws_ebs_volume" "controller_data" {
+  availability_zone = data.aws_subnet.subnetwork.availability_zone
+  size              = var.data_disk_size
+  type              = var.data_disk_type
+  tags = {
+    Name = "${var.name}-data"
+  }
+}
+
+resource "aws_volume_attachment" "controller_data_attach" {
+  device_name = "/dev/xvdf"
+  volume_id   = aws_ebs_volume.controller_data.id
+  instance_id = aws_instance.controller.id
+}
+
 resource "aws_instance" "controller" {
   depends_on                  = [null_resource.check_permissions, aws_db_instance.postgres_instance]
   ami                         = var.controller_ami != null ? var.controller_ami : data.aws_ami.ubuntu24.id
@@ -45,14 +60,6 @@ resource "aws_instance" "controller" {
     volume_type = "gp2"
   }
 
-  ebs_block_device {
-    device_name = "/dev/xvdf"
-    volume_size = var.data_disk_size
-    volume_type = var.data_disk_type
-    tags = {
-      Name = "${var.name}-data"
-    }
-  }
 
   iam_instance_profile   = aws_iam_instance_profile.controller_profile.name
   vpc_security_group_ids = [aws_security_group.controller_sg.id]
@@ -63,17 +70,25 @@ resource "aws_instance" "controller" {
 
   user_data = var.controller_ami != null ? base64encode(<<EOF
 #!/bin/bash
-VELDA_INST=${var.name} /opt/velda/bin/setup.sh
+cat << EOT > /tmp/velda_install.json
+${jsonencode({
+    "instance_id" : var.name,
+    "base_instance_images" : var.base_instance_images,
+    "zfs_disks" : ["/dev/xvdf"],
+})}
+EOT
+/opt/velda/bin/setup.sh /tmp/velda_install.json
 EOF
-    ) : templatefile("${path.module}/data/always_run.txt", {
-      script = templatefile("${path.module}/data/controller_start.sh", {
-        instance = var.name,
-      })
+) : templatefile("${path.module}/data/always_run.txt", {
+  script = templatefile("${path.module}/data/controller_start.sh", {
+    instance = var.name,
   })
+})
 
-  lifecycle {
-    ignore_changes = [ami]
-  }
+lifecycle {
+  ignore_changes        = [ami]
+  create_before_destroy = true
+}
 }
 
 resource "aws_eip" "lb" {

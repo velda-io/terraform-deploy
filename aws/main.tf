@@ -21,7 +21,7 @@ data "aws_subnet" "subnetwork" {
 
 module "controller" {
   source = "./controller"
-  name = var.name
+  name   = var.name
 
   region               = var.region
   zone                 = var.zone
@@ -29,7 +29,7 @@ module "controller" {
   subnet_ids           = var.subnet_ids
   controller_subnet_id = var.controller_subnet_id
   domain               = var.domain
-  controller_ami       = lookup(var.controller_amis, var.region, null)
+  controller_ami       = var.controller_amis != null ? var.controller_amis[var.region] : null
 
   external_access = var.external_access
 
@@ -58,6 +58,8 @@ module "controller" {
   data_disk_size = var.data_disk_size
 
   enable_saml = lookup(var.configs, "enable_saml", false)
+
+  base_instance_images = var.base_instance_images
 }
 
 module "agent" {
@@ -66,10 +68,10 @@ module "agent" {
 
   controller_output = module.controller.agent_configs
 
-  pool             = each.value.name
-  agent_ami        = each.value.ami != null ? each.value.ami : var.default_amis[each.value.ami_type]
-  instance_type    = each.value.instance_type
-  autoscale_config = each.value.autoscale_config
+  pool                = each.value.name
+  agent_ami           = each.value.ami != null ? each.value.ami : var.default_amis[each.value.ami_type]
+  instance_type       = each.value.instance_type
+  autoscale_config    = each.value.autoscale_config
   init_script_content = each.value.init_script_content
 }
 

@@ -128,3 +128,12 @@ variable "enable_saml" {
   type        = bool
   default     = false
 }
+
+variable "base_instance_images" {
+  description = "Base images for the deployment"
+  type = list(object({
+    name        = string
+    docker_name = string
+  }))
+  default = []
+}
