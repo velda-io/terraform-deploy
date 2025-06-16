@@ -23,7 +23,7 @@ resource "aws_db_instance" "postgres_instance" {
 }
 
 resource "aws_db_subnet_group" "default" {
-  name       = "${var.name}-db-subnet-group"
+  name_prefix = "${var.name}-db-subnet-group"
   subnet_ids = var.subnet_ids
 }
 
