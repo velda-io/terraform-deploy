@@ -20,6 +20,9 @@ resource "aws_db_instance" "postgres_instance" {
   vpc_security_group_ids = [aws_security_group.db_sg.id]
   storage_encrypted      = true
   skip_final_snapshot    = true
+  lifecycle {
+    ignore_changes       = ["snapshot_identifier"]
+  }
 }
 
 resource "aws_db_subnet_group" "default" {
