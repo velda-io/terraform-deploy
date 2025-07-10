@@ -145,3 +145,8 @@ variable "enable_saml" {
   type        = bool
   default     = false
 }
+
+variable "controller_image" {
+  description = "value of the controller image to use"
+  type        = string
+}

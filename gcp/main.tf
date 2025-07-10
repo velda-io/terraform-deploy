@@ -80,6 +80,8 @@ module "controller" {
   network    = var.network
   domain     = var.domain
 
+  controller_image = var.controller_image
+
   external_access = var.external_access
   use_nat_gateway = var.external_access.use_nat_gateway
 

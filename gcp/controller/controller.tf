@@ -22,7 +22,7 @@ resource "google_compute_instance" "controller" {
     device_name = "${var.name}-bootdisk"
 
     initialize_params {
-      image = "projects/skyworkstation/global/images/velda-controller-1748589039"
+      image = var.controller_image
       size  = 10
       type  = "pd-standard"
     }
