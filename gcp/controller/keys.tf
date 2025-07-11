@@ -9,18 +9,18 @@ resource "tls_private_key" "jumphost_key" {
 }
 
 resource "tls_private_key" "saml_sp_key" {
-  count      = var.enable_saml ? 1 : 0
-  algorithm  = "RSA"
-  rsa_bits   = 2048
+  count     = var.enable_saml ? 1 : 0
+  algorithm = "RSA"
+  rsa_bits  = 2048
 }
 
 
 resource "tls_self_signed_cert" "sp" {
-  count = var.enable_saml ? 1 : 0
+  count           = var.enable_saml ? 1 : 0
   private_key_pem = tls_private_key.saml_sp_key[0].private_key_pem
 
   subject {
-    common_name  = "${var.domain}"
+    common_name  = var.domain
     organization = "Your Company"
   }
 

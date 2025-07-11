@@ -14,7 +14,7 @@ output "agent_configs" {
     controller_ip = google_compute_address.internal_ip.address
 
     agent_service_account = data.google_service_account.agent_sa.email
-    use_nat_gateway = var.use_nat_gateway
+    use_nat_gateway       = var.use_nat_gateway
 
     config_gcs_bucket = google_storage_bucket.pool_configs.name
     config_gcs_prefix = "pools/"

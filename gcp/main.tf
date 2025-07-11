@@ -20,7 +20,7 @@ data "google_project" "project" {
 }
 
 locals {
-  network_component   = regex("^projects/([^/]+)/global/networks/(.+)$", var.network)
+  network_component    = regex("^projects/([^/]+)/global/networks/(.+)$", var.network)
   subnetwork_component = regex("^projects/([^/]+)/regions/([^/]+)/subnetworks/(.+)$", var.subnetwork)
 }
 
@@ -31,7 +31,7 @@ data "google_compute_network" "network" {
 
 data "google_compute_subnetwork" "subnetwork" {
   project = local.subnetwork_component[0]
-  region = local.subnetwork_component[1]
+  region  = local.subnetwork_component[1]
   name    = local.subnetwork_component[2]
 }
 

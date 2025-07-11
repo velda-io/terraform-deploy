@@ -1,11 +1,11 @@
 data "google_service_account" "controller_sa" {
-  project      = var.project
-  account_id   = "${var.name}-controller"
+  project    = var.project
+  account_id = "${var.name}-controller"
 }
 
 data "google_service_account" "agent_sa" {
-  project      = var.project
-  account_id   = "${var.name}-agent"
+  project    = var.project
+  account_id = "${var.name}-agent"
 }
 
 resource "google_project_iam_member" "controller_k8s" {

@@ -1,4 +1,5 @@
 resource "google_compute_firewall" "allow_api_port" {
+  count   = var.external_access.setup_firewall_rule ? 1 : 0
   name    = "${var.name}-api-access"
   network = var.network
 
@@ -13,6 +14,7 @@ resource "google_compute_firewall" "allow_api_port" {
 }
 
 resource "google_compute_firewall" "agent_access" {
+  count   = var.external_access.setup_firewall_rule ? 1 : 0
   name    = "${var.name}-agent-access"
   network = var.network
 
@@ -21,6 +23,6 @@ resource "google_compute_firewall" "agent_access" {
     ports    = ["80", "443", "2222", "50051", "2049"]
   }
 
-  source_tags   = ["${var.name}-agent"]
-  target_tags   = ["${var.name}-server"]
+  source_tags = ["${var.name}-agent"]
+  target_tags = ["${var.name}-server"]
 }

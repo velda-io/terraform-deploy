@@ -43,7 +43,7 @@ resource "google_compute_instance" "controller" {
     queue_count = 0
     stack_type  = "IPV4_ONLY"
     subnetwork  = var.subnetwork
-    network_ip = google_compute_address.internal_ip.address
+    network_ip  = google_compute_address.internal_ip.address
   }
 
   scheduling {
@@ -71,27 +71,27 @@ resource "google_compute_instance" "controller" {
       auth-private-key = sensitive(tls_private_key.auth_token_key.private_key_pem)
       velda-domain     = var.domain
       ops-agent-config = file("${path.module}/data/ops_agent_config.yaml")
-      startup-script   = <<EOF
+      startup-script = <<EOF
 #!/bin/bash
 cat << EOT > /tmp/velda_install.json
 ${jsonencode({
-  "instance_id": var.name,
-  "base_instance_images": var.base_instance_images,
-  "zfs_disks": ["/dev/disk/by-label/zpool"],
+      "instance_id" : var.name,
+      "base_instance_images" : var.base_instance_images,
+      "zfs_disks" : ["/dev/disk/by-label/zpool"],
 })}
 EOT
 /opt/velda/bin/setup.sh /tmp/velda_install.json
 EOF
-    },
-    module.configs.configs,
-    var.gke_cluster != null ? {
-      gke-auth = "gcloud container clusters get-credentials ${var.gke_cluster.cluster_id} --location ${var.gke_cluster.location}  --project ${var.gke_cluster.project}"
-  } : {})
+},
+module.configs.configs,
+var.gke_cluster != null ? {
+  gke-auth = "gcloud container clusters get-credentials ${var.gke_cluster.cluster_id} --location ${var.gke_cluster.location}  --project ${var.gke_cluster.project}"
+} : {})
 
-  zone = var.zone
+zone = var.zone
 
-  lifecycle {
-    ignore_changes = [metadata["ssh-keys"]]
-    create_before_destroy = false
-  }
+lifecycle {
+  ignore_changes        = [metadata["ssh-keys"]]
+  create_before_destroy = false
+}
 }

@@ -98,6 +98,7 @@ variable "external_access" {
     allowed_source_ranges = optional(list(string), ["0.0.0.0/0"]) // Source ranges for the firewall rule
     allowed_source_tags   = optional(list(string), [])            // Source tags for the firewall rule
     use_nat_gateway       = optional(bool, false)                 // Whether to use NAT gateway for the internet network
+    setup_firewall_rule   = optional(bool, true)                  // Whether to setup firewall rule for the external access
   })
   default = {
 
