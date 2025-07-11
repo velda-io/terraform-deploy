@@ -18,13 +18,21 @@ provider "google" {
 data "google_project" "project" {
   project_id = var.project
 }
+
+locals {
+  network_component   = regex("^projects/([^/]+)/global/networks/(.+)$", var.network)
+  subnetwork_component = regex("^projects/([^/]+)/regions/([^/]+)/subnetworks/(.+)$", var.subnetwork)
+}
+
 data "google_compute_network" "network" {
-  name = basename(var.network)
+  project = local.network_component[0]
+  name    = local.network_component[1]
 }
 
 data "google_compute_subnetwork" "subnetwork" {
-  name   = basename(var.subnetwork)
-  region = var.region
+  project = local.subnetwork_component[0]
+  region = local.subnetwork_component[1]
+  name    = local.subnetwork_component[2]
 }
 
 resource "google_service_account" "controller_sa" {
