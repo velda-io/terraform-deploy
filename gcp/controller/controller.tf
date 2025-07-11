@@ -33,7 +33,7 @@ resource "google_compute_instance" "controller" {
 
   network_interface {
     dynamic "access_config" {
-      for_each = var.external_access.use_proxy ? [1] : []
+      for_each = var.use_nat_gateway ? [] : [1]
       content {
         network_tier = var.external_access.network_tier
         nat_ip       = var.external_access.server_ip_address

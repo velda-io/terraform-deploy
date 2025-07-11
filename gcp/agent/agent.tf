@@ -20,7 +20,7 @@ resource "google_compute_instance_template" "agent_template" {
 
     // Only allocate a public IP if the NAT gateway is not used
     dynamic "access_config" {
-      for_each = var.controller_output.use_nat_gateway ? [1] : []
+      for_each = var.controller_output.use_nat_gateway ? [] : [1]
       content {
         network_tier = "STANDARD"
       }
