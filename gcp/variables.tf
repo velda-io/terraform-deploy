@@ -103,3 +103,8 @@ variable "external_access" {
 
   }
 }
+
+variable "controller_image" {
+  description = "value of the controller image to use"
+  type        = string
+}
