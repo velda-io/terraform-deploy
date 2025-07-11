@@ -40,7 +40,7 @@ resource "google_service_account" "agent_sa" {
 }
 
 locals {
-  permission_request = provider::terraform::encode_expr({
+  permission_request = jsonencode({
     controller_sa = google_service_account.controller_sa.email
     agent_sa      = google_service_account.agent_sa.email
     project_id    = data.google_project.project.project_id
