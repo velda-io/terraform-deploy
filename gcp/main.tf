@@ -24,11 +24,6 @@ locals {
   subnetwork_component = regex("^projects/([^/]+)/regions/([^/]+)/subnetworks/(.+)$", var.subnetwork)
 }
 
-data "google_compute_network" "network" {
-  project = local.network_component[0]
-  name    = local.network_component[1]
-}
-
 data "google_compute_subnetwork" "subnetwork" {
   project = local.subnetwork_component[0]
   region  = local.subnetwork_component[1]
@@ -119,4 +114,7 @@ module "agent" {
 
   accelerator_count = each.value.accelerator_count
   accelerator_type  = each.value.accelerator_type
+
+  sandbox_config = each.value.sandbox_config
+  daemon_config  = each.value.daemon_config
 }

@@ -52,6 +52,8 @@ resource "google_compute_instance_template" "agent_template" {
       broker = {
         address = "http://${var.controller_output.controller_ip}:50051"
       }
+      sandbox_config = var.sandbox_config
+      daemon_config = var.daemon_config
     })
   }
 

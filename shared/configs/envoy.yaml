@@ -59,11 +59,13 @@ static_resources:
                   - match:
                       prefix: "/api/"
                     route:
+                      timeout: 0s
                       cluster: grpc_service
                       prefix_rewrite: "/"
                   - match:
                       prefix: "/velda."
                     route:
+                      timeout: 0s
                       cluster: grpc_service
                   # Route `/auth/` to localhost:8080
                   - match:

@@ -59,6 +59,8 @@ variable "gce_pools" {
     autoscale_config  = any
     accelerator_type  = optional(string)
     accelerator_count = optional(number, 0)
+    sandbox_config    = optional(map(any), {})
+    daemon_config     = optional(map(any), {})
   }))
   default = []
 }
