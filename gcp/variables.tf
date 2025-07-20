@@ -77,6 +77,7 @@ variable "base_instance_images" {
 variable "agent_image_version" {
   description = "The version of the image"
   type        = map(string)
+  default     = {}
 }
 
 variable "access_granted" {

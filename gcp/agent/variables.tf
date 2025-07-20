@@ -52,12 +52,12 @@ variable "accelerator_count" {
 
 variable "sandbox_config" {
   description = "Option of sandbox. See proto of SandboxConfig for details"
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
 variable "daemon_config" {
   description = "Configuration for the Velda agent daemon"
-  type        = map(any)
+  type        = any
   default     = {}
 }

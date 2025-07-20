@@ -101,6 +101,10 @@ module "controller" {
   enable_saml = lookup(var.configs, "enable_saml", false)
 }
 
+output "agent_configs" {
+  value = module.controller.agent_configs
+}
+
 module "agent" {
   source   = "./agent"
   for_each = { for pool in var.gce_pools : pool.name => pool }

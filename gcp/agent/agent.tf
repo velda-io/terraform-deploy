@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 6.15.0"
+    }
+  }
+}
+  
 locals {
   has_gpu = var.accelerator_type != null && var.accelerator_count > 0
 }
