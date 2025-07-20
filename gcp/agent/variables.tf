@@ -1,17 +1,17 @@
 variable "controller_output" {
   description = "The output of the controller module for agent"
-  type        = object({
-    project = string
-    name = string
-    region = string
-    zone = string
-    network = string
-    subnetwork = string
-    controller_ip = string
+  type = object({
+    project               = string
+    name                  = string
+    region                = string
+    zone                  = string
+    network               = string
+    subnetwork            = string
+    controller_ip         = string
     agent_service_account = string
-    use_nat_gateway = bool
-    config_gcs_bucket = string
-    config_gcs_prefix = string
+    use_nat_gateway       = bool
+    config_gcs_bucket     = string
+    config_gcs_prefix     = string
   })
 }
 
@@ -35,7 +35,7 @@ variable "pool" {
 variable "autoscale_config" {
   description = "The autoscale configuration"
   // See proto of AgentPool_AutoScaler
-  type        = any
+  type = any
 }
 
 variable "accelerator_type" {
@@ -60,4 +60,10 @@ variable "daemon_config" {
   description = "Configuration for the Velda agent daemon"
   type        = any
   default     = {}
+}
+
+variable "upgrade_agent_on_start" {
+  description = "Whether to upgrade the agent on start"
+  type        = bool
+  default     = false
 }

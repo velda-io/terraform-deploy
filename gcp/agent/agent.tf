@@ -6,12 +6,12 @@ terraform {
     }
   }
 }
-  
+
 locals {
   has_gpu = var.accelerator_type != null && var.accelerator_count > 0
 }
 resource "google_compute_instance_template" "agent_template" {
-  name_prefix           = "${var.controller_output.name}-agent-${var.pool}-"
+  name_prefix    = "${var.controller_output.name}-agent-${var.pool}-"
   machine_type   = var.instance_type
   can_ip_forward = false
 
@@ -53,7 +53,7 @@ resource "google_compute_instance_template" "agent_template" {
     scopes = ["cloud-platform"]
   }
 
-  metadata = {
+  metadata = merge({
     velda_instance = var.controller_output.name
     pool           = var.pool
     velda_host     = var.controller_output.controller_ip
@@ -62,9 +62,19 @@ resource "google_compute_instance_template" "agent_template" {
         address = "http://${var.controller_output.controller_ip}:50051"
       }
       sandbox_config = var.sandbox_config
-      daemon_config = var.daemon_config
+      daemon_config  = var.daemon_config
     })
-  }
+    },
+    var.upgrade_agent_on_start ? {
+      startup-script = <<-EOT
+      #!/bin/bash
+      set -euo pipefail
+      echo "Upgrading agent on start..."
+      gsutil cp gs://novahub-release/client-latest-amd64 velda-agent
+      chmod +x velda-agent
+      cp velda-agent /opt/velda/bin/client
+      EOT
+  } : {})
 
   tags = ["${var.controller_output.name}-agent", "${var.pool}"]
 
