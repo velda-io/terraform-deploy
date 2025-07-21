@@ -1,3 +1,6 @@
+locals {
+  use_hyperdisk_boot_disk = startswith(var.controller_machine_type, "n4")
+}
 resource "google_compute_address" "internal_ip" {
   name         = "${var.name}-internal-ip"
   subnetwork   = var.subnetwork
@@ -24,7 +27,7 @@ resource "google_compute_instance" "controller" {
     initialize_params {
       image = var.controller_image
       size  = 10
-      type  = "pd-standard"
+      type  = local.use_hyperdisk_boot_disk ? "hyperdisk-balanced" : "pd-standard"
     }
 
     mode = "READ_WRITE"

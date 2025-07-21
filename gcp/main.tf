@@ -98,6 +98,10 @@ module "controller" {
 
   base_instance_images = var.base_instance_images
 
+  controller_machine_type = var.controller_machine_type
+  data_disk_size = var.data_disk_size
+  data_disk_type = var.data_disk_type
+
   enable_saml = lookup(var.configs, "enable_saml", false)
 }
 

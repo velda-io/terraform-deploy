@@ -112,3 +112,15 @@ variable "controller_image" {
   description = "value of the controller image to use"
   type        = string
 }
+
+variable "data_disk_type" {
+  description = "Type of the disk for storing user data"
+  type        = string
+  default     = "pd-balanced"
+}
+
+variable "data_disk_size" {
+  description = "Size of disk for user data"
+  type        = number
+  default     = 100
+}
