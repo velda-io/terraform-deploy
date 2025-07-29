@@ -31,6 +31,15 @@ resource "aws_iam_policy" "agent_policy" {
           "arn:aws:ssm:${var.region}:*:parameter/${var.name}/agent/*"
         ]
       },
+         {
+        Effect = "Allow",
+        Action = [
+          "ssm:GetParameter"
+        ],
+        Resource = [
+          "arn:aws:ssm:${var.region}:*:parameter/${var.name}/agent-config/*"
+        ]
+      },
       {
         Effect   = "Allow",
         Action   = "ec2:DescribeTags",

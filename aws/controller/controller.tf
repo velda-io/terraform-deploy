@@ -2,22 +2,6 @@ locals {
   agent_cidrs = var.gke_cluster != null ? [var.gke_cluster.cluster_ipv4_cidr] : ["*"]
 }
 
-data "aws_ami" "ubuntu24" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
-}
-
 data "aws_subnet" "subnetwork" {
   id = var.subnet_ids[0]
 }
@@ -50,7 +34,7 @@ resource "aws_volume_attachment" "controller_data_attach" {
 
 resource "aws_instance" "controller" {
   depends_on                  = [null_resource.check_permissions, aws_db_instance.postgres_instance]
-  ami                         = var.controller_ami != null ? var.controller_ami : data.aws_ami.ubuntu24.id
+  ami                         = var.controller_ami
   instance_type               = var.controller_machine_type
   subnet_id                   = var.controller_subnet_id
   associate_public_ip_address = var.external_access.use_controller_external_ip || var.external_access.use_eip
@@ -83,10 +67,10 @@ EOF
   script = templatefile("${path.module}/data/controller_start.sh", {
     instance = var.name,
   })
-})
+}
+)
 
 lifecycle {
-  ignore_changes        = [ami]
   create_before_destroy = true
 }
 }

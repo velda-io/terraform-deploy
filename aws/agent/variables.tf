@@ -40,3 +40,15 @@ variable "init_script_content" {
   type        = string
   default = null
 }
+
+variable "sandbox_config" {
+  description = "Option of sandbox. See proto of SandboxConfig for details"
+  type        = any
+  default     = {}
+}
+
+variable "daemon_config" {
+  description = "Configuration for the Velda agent daemon"
+  type        = any
+  default     = {}
+}

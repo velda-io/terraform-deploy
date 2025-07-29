@@ -1,5 +1,5 @@
-output "controller_ip" {
-  value = var.external_access.use_eip ? aws_eip.lb[0].public_ip : aws_instance.controller.public_ip
+locals {
+  controller_ip  = var.external_access.use_eip ? aws_eip.lb[0].public_ip : aws_instance.controller.public_ip
 }
 
 output "controller_ip_internal" {
@@ -29,4 +29,12 @@ output "agent_configs" {
     controller_ip      = aws_instance.controller.private_ip
     instance_profile   = aws_iam_instance_profile.agent_profile.name
   }
+}
+
+output "dns_instructions" {
+  value = <<EOF
+To set the DNS name, set the following DNS mapping:
+${var.domain} -> ${local.controller_ip} (A record)
+*.i.${var.domain} -> ${var.domain} (CNAME record)
+EOF
 }

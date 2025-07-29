@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.87.0"
+    }
+  }
+}
+
 resource "aws_launch_template" "agent" {
   name          = "${var.controller_output.name}-agent-${var.pool}"
   image_id      = var.agent_ami
@@ -41,3 +50,14 @@ resource "aws_launch_template" "agent" {
   }
 }
 
+resource "aws_ssm_parameter" "agent_daemon_config" {
+  name = "/${var.controller_output.name}/agent-config/${var.pool}"
+  type = "String"
+  value = yamlencode({
+    broker = {
+      address = "http://${var.controller_output.controller_ip}:50051"
+    }
+    daemon_config = var.daemon_config
+    sandbox_config = var.sandbox_config
+  })
+}
