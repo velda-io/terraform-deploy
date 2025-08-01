@@ -1,4 +1,10 @@
+data "aws_iam_role" "agent_role" {
+  count = var.agent_role_override != null ? 1 : 0
+  name  = var.agent_role_override
+}
+
 resource "aws_iam_role" "agent_role" {
+  count = var.agent_role_override == null ? 1 : 0
   name = "${var.name}-agent-role"
 
   assume_role_policy = jsonencode({
@@ -16,6 +22,7 @@ resource "aws_iam_role" "agent_role" {
 }
 
 resource "aws_iam_policy" "agent_policy" {
+  count = var.agent_role_override == null ? 1 : 0
   name        = "${var.name}-agent"
   description = "Policy to allow EC2 instance to read from SSM and S3"
 
@@ -87,11 +94,17 @@ resource "aws_iam_policy" "agent_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "agent_policy_attachment" {
-  role       = aws_iam_role.agent_role.name
-  policy_arn = aws_iam_policy.agent_policy.arn
+  count      = var.agent_role_override == null ? 1 : 0
+  role       = aws_iam_role.agent_role[0].name
+  policy_arn = aws_iam_policy.agent_policy[0].arn
+}
+
+locals {
+  agent_role_name = var.agent_role_override != null ? data.aws_iam_role.agent_role[0].name : aws_iam_role.agent_role[0].name
+  agent_role_arn  = var.agent_role_override != null ? data.aws_iam_role.agent_role[0].arn : aws_iam_role.agent_role[0].arn
 }
 
 resource "aws_iam_instance_profile" "agent_profile" {
   name = "${var.name}-agent-profile"
-  role = aws_iam_role.agent_role.name
+  role = local.agent_role_name
 }

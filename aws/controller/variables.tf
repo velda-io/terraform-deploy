@@ -137,3 +137,9 @@ variable "base_instance_images" {
   }))
   default = []
 }
+
+variable "agent_role_override" {
+  description = "Override the agent role. If not set, will use a minimal permission agent role."
+  type        = string
+  default     = null
+}

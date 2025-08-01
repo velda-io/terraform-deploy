@@ -98,7 +98,7 @@ resource "aws_iam_policy" "controller_policy" {
           "iam:PassRole"
         ],
         Resource = [
-          aws_iam_role.agent_role.arn,
+          local.agent_role_arn,
         ]
       },
       {
